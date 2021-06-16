@@ -148,7 +148,9 @@ public class ExtensionLoader<T> {
     }
 
     private ExtensionLoader(Class<?> type) {
+        // Protocol.class
         this.type = type;
+        // TODO
         objectFactory =
                 (type == ExtensionFactory.class ? null : ExtensionLoader.getExtensionLoader(ExtensionFactory.class).getAdaptiveExtension());
     }
@@ -391,6 +393,7 @@ public class ExtensionLoader<T> {
     private Holder<Object> getOrCreateHolder(String name) {
         Holder<Object> holder = cachedInstances.get(name);
         if (holder == null) {
+            // 缓存name对应的实例
             cachedInstances.putIfAbsent(name, new Holder<>());
             holder = cachedInstances.get(name);
         }
@@ -427,10 +430,17 @@ public class ExtensionLoader<T> {
         return getExtension(name, true);
     }
 
+    /**
+     *  当前演示name -> myprotocol
+     * @param name
+     * @param wrap
+     * @return
+     */
     public T getExtension(String name, boolean wrap) {
         if (StringUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Extension name == null");
         }
+        // name = true 默认扩展点
         if ("true".equals(name)) {
             return getDefaultExtension();
         }
@@ -440,7 +450,9 @@ public class ExtensionLoader<T> {
             synchronized (holder) {
                 instance = holder.get();
                 if (instance == null) {
+                    // MyProcol对应的实例
                     instance = createExtension(name, wrap);
+                    // 获得实例之后将Myprocol的实例放入缓存种
                     holder.set(instance);
                 }
             }
@@ -649,6 +661,7 @@ public class ExtensionLoader<T> {
 
     @SuppressWarnings("unchecked")
     private T createExtension(String name, boolean wrap) {
+        // Clazz  对应Myprotol对应的class
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null || unacceptableExceptions.contains(name)) {
             throw findException(name);
